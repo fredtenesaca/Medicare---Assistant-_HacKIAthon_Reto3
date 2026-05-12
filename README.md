@@ -1,101 +1,46 @@
-# Medicare Assistant
+# Estimador Agéntico de Copago y Cobertura
 
-Aplicación web en Next.js 15 para orientación médica asistida por IA, comparación de hospitales, generación de PDF y flujo de chatbot conectado a un webhook de n8n.
+Proyecto desarrollado para el **Reto 3** de la **hackIAthon Viamatica**
 
-## Stack
+## Descripción de la Solución
 
-- Next.js 15 + React 19
-- TypeScript
-- Tailwind CSS 4
-- Zustand
-- n8n webhook
-- jsPDF
-- Preparado para futuras integraciones con Gemini AI y Notion API mediante variables de entorno server-side
+INDUBOT es un asistente inteligente que transforma la experiencia del paciente antes de acudir al hospital. El agente realiza un triaje clínico, sugiere la especialidad médica adecuada y calcula el beneficio económico real (copago) cruzando datos de geolocalización, red de hospitales y planes de seguro en tiempo real.
 
-## Requisitos
+## Stack Tecnológico
 
-- Node.js 20 o superior recomendado
-- npm
-- Un webhook de n8n activo para el flujo del chatbot
+### Frontend
 
-## Instalación
+Para garantizar una interfaz rápida, segura y reactiva, el equipo implementó:
+**React & Vue:** Frameworks líderes para una navegación fluida y componentes dinámicos.
+**TypeScript:** Tipado estático para asegurar un código robusto y facilitar el mantenimiento a largo plazo.
+**Taiwild:** Maquetación moderna y responsiva centrada en la accesibilidad del paciente.
 
-```bash
-npm install
-cp .env.local.example .env.local
-npm run dev
-```
+### Backend & AI Engine
 
-En Windows PowerShell, si `npm` se bloquea por execution policy, usa:
+La lógica de negocio y el razonamiento de IA se orquestan mediante:
+**Orquestador de Microservicios:** Gestiona el flujo de datos asíncrono entre el frontend, los modelos de lenguaje y las bases de datos externas. No se limita a una ejecución lineal; implementa lógica de control de flujo para validar la integridad de la información antes de cada decisión agéntica
+**Google Gemini 1.5 Flash:** Motor de lenguaje de gran escala (LLM) configurado para razonamiento clínico y toma de decisiones basadas en herramientas (Function Calling).
+**PostgreSQL:** Persistencia de memoria conversacional para mantener el contexto mediante la cédula del paciente.
+**Notion API:** Base de datos maestra (CRM) para la gestión dinámica de planes médicos y red de prestadores.
+**JavaScript:** Ejecución de lógica matemática determinista para cálculos de copago libres de alucinaciones.
 
-```bash
-npm.cmd run dev
-```
+## Arquitectura del Agente
 
-La app queda disponible normalmente en `http://localhost:3000`.
+El agente opera bajo una metodología de **Chain of Thought (Cadena de Pensamiento)**:
 
-## Variables de entorno
+1. **Ingesta:** Captura de síntomas, cédula y coordenadas GPS vía Webhook.
+2. **Triaje:** Clasificación de urgencia (Baja, Media, Alta) y derivación a especialidad.
+3. **Retrieval:** Consulta a Notion para identificar el % de cobertura del plan del paciente.
+4. **Optimización:** Cálculo de distancia (Haversine) para sugerir el hospital más cercano con el menor costo.
+5. **Cierre:** Respuesta empática y estructurada con el cálculo final de copago.
 
-Copia `.env.local.example` a `.env.local` y configura:
+## Equipo - ELEVEN´S PROMPT
 
-```env
-NEXT_PUBLIC_N8N_WEBHOOK=https://your-n8n-instance.com/webhook/your-workflow
-GEMINI_API_KEY=replace-with-your-gemini-api-key
-NOTION_API_KEY=replace-with-your-notion-api-key
-NOTION_DATABASE_ID=replace-with-your-notion-database-id
-```
+- **Freddy Tenesaca** - Team Leader & Backend/AI Developer
+- **Héctor Rugel** - Data Architect (Notion & DB)
+- **Iván Suarez** - Frontend Developer (React/TS/Typebot)
 
-`NEXT_PUBLIC_N8N_WEBHOOK` es visible en el navegador porque el chatbot llama al webhook desde cliente. No coloques tokens privados en variables `NEXT_PUBLIC_*`.
+**Entregables:**
 
-## Configuración de n8n
-
-El webhook debe aceptar `POST` con JSON:
-
-```json
-{
-  "paciente_cedula": "string",
-  "paciente_sintoma": "string",
-  "usuario_lat": 0,
-  "usuario_long": 0
-}
-```
-
-Respuesta recomendada:
-
-```json
-{
-  "analysis": "string",
-  "urgency": "ALTA|MEDIA|BAJA",
-  "specialty": "string",
-  "hospitals": [
-    {
-      "name": "string",
-      "address": "string",
-      "distanceKm": 1.5,
-      "copago": "string",
-      "coverage": "string",
-      "specialty": "string"
-    }
-  ],
-  "costBase": "string",
-  "coverage": "string",
-  "copago": "string",
-  "recommendation": "string"
-}
-```
-
-Usa una URL `/webhook/...` para uso normal. Las URLs `/webhook-test/...` solo funcionan mientras n8n está escuchando en modo test.
-
-## Scripts
-
-```bash
-npm run dev      # servidor local
-npm run build    # build de producción
-npm run start    # servir build
-npm run lint     # ESLint
-npx.cmd tsc --noEmit  # verificación TypeScript en Windows
-```
-
-## Qué no se sube a GitHub
-
-El `.gitignore` excluye dependencias, builds, `.next`, logs, caches, coverage, archivos temporales y variables de entorno reales. Mantén fuera del repositorio cualquier `.env.local`, token, credencial o exportación privada.
+- Enlace al Agente Funcional:
+- Enlace al Repositorio:
